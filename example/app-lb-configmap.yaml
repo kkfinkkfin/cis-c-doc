@@ -1,0 +1,96 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: one-tenant-multiple-apps
+  namespace: f5-test002
+  labels:
+    f5type: virtual-server
+    as3: "true"
+data:
+  template: |
+    {
+      "class": "AS3",
+      "action": "deploy",
+      "persist": true, 
+      "declaration": {
+        "class": "ADC",
+        "schemaVersion": "3.11.0",
+        "id": "one-tenant-multiple-apps",
+        "label": "one-tenant-multiple-apps",
+        "remark": "HTTP application",
+        "f5_test002": {
+          "class": "Tenant",
+          "f5_test002_1": {
+            "class": "Application",
+            "template": "generic",
+            "customHTTPProfile": {
+              "class": "HTTP_Profile",
+              "xForwardedFor": true
+            },
+            "app_1_svc_vs": {
+              "class": "Service_HTTP",
+              "iRules": ["IRules_XFF"],
+              "persistenceMethods": [ "cookie" ],
+              "virtualAddresses": [
+                "192.168.2.217"
+              ],
+              "snat": "auto",
+              "virtualPort": 80,
+              "profileHTTP": {
+                "use": "customHTTPProfile"
+              },
+              "pool": "app_1_svc_pool"
+            },
+            "app_1_svc_pool": {
+              "class": "Pool",
+              "monitors": [
+                "http"
+              ],
+              "loadBalancingMode": "least-connections-member",
+              "members": [
+              {
+                "servicePort": 80,
+                "serverAddresses": []
+              }
+              ]
+            }
+          },
+           "f5_test002_2": {
+            "class": "Application",
+            "template": "generic",
+            "customHTTPProfile": {
+              "class": "HTTP_Profile",
+              "xForwardedFor": true
+            },
+            "app_2_svc_vs": {
+              "class": "Service_HTTP",
+               "iRules": ["IRules_XFF1"],
+              "persistenceMethods": [ "cookie" ],
+              "virtualAddresses": [
+                "192.168.2.216"
+              ],
+              "snat": "auto",
+              "virtualPort": 80,
+              "profileHTTP": {
+                "use": "customHTTPProfile"
+              },
+              "pool": "app_2_svc_pool"
+            },
+            "app_2_svc_pool": {
+              "class": "Pool",
+              "monitors": [
+                "http"
+              ],
+              "loadBalancingMode": "least-connections-member",
+              "members": [
+              {
+                "servicePort": 80,
+                "serverAddresses": []
+              }
+              ]
+            }
+          }
+        }
+      }
+    }
+ 
