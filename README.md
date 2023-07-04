@@ -18,7 +18,6 @@ label：
   cis.f5.com/as3-app=<SERVICE_NAME>
   cis.f5.com/as3-app=<NAMESPACE_NAME>_<NAMESPACE_NAME>_pool
 ```
-可以参考 example 
 
 
 2. 下发负载均衡配置 Configmap
@@ -88,4 +87,3 @@ data:
       }
     }
 ```
-可参考example
