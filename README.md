@@ -22,10 +22,10 @@ label：
 
 2. 下发负载均衡配置 Configmap
 注意： 根据实际应用信息替换变量值
-`<SERVICE_NAME>`:  应用服务Service名称
-`<SERVICE_PORT>`:  应用服务Service端口
-`<NAMESPACE_NAME>`: 应用服务所在的命名空间Namespace名称
-`<APP_VIP>`: 分配给应用的入口VIP
+- `<SERVICE_NAME>`:  应用服务Service名称
+- `<SERVICE_PORT>`:  应用服务Service端口
+- `<NAMESPACE_NAME>`: 应用服务所在的命名空间Namespace名称
+- `<APP_VIP>`: 分配给应用的入口VIP
 
 ```
 kind: ConfigMap
