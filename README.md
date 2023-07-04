@@ -18,12 +18,8 @@ label：
   cis.f5.com/as3-app=<SERVICE_NAME>
   cis.f5.com/as3-app=<NAMESPACE_NAME>_<NAMESPACE_NAME>_pool
 ```
-举例：
-```
-kubectl label svc app-2-svc cis.f5.com/as3-tenant=test002 -n test002
-kubectl label svc app-2-svc cis.f5.com/as3-app=app-2-svc -n test002
-kubectl label svc app-2-svc cis.f5.com/as3-pool=test002_app-2-svc_pool -n test002
-```
+可以参考 example 
+
 
 2. 下发负载均衡配置 Configmap
 注意： 根据实际应用信息替换变量值
@@ -92,96 +88,4 @@ data:
       }
     }
 ```
-
-举例：
-```
-kind: ConfigMap
-apiVersion: v1
-metadata:
-  name: one-tenant-multiple-apps
-  namespace: f5-test002
-  labels:
-    f5type: virtual-server
-    as3: "true"
-data:
-  template: |
-    {
-      "class": "AS3",
-      "action": "deploy",
-      "persist": true, 
-      "declaration": {
-        "class": "ADC",
-        "schemaVersion": "3.11.0",
-        "id": "one-tenant-multiple-apps",
-        "label": "one-tenant-multiple-apps",
-        "remark": "HTTP application",
-        "f5_test002": {
-          "class": "Tenant",
-          "f5_test002_1": {
-            "class": "Application",
-            "template": "generic",
-            "app_1_svc_vs": {
-              "class": "Service_HTTP",
-              "iRules": ["IRules_XFF"],
-              "persistenceMethods": [ "cookie" ],
-              "virtualAddresses": [
-                "192.168.2.217"
-              ],
-              "snat": "auto",
-              "virtualPort": 80,
-              "pool": "app_1_svc_pool"
-            },
-            "app_1_svc_pool": {
-              "class": "Pool",
-              "monitors": [
-                "http"
-              ],
-              "loadBalancingMode": "least-connections-member",
-              "members": [
-              {
-                "servicePort": 80,
-                "serverAddresses": []
-              }
-              ]
-            },
-             "IRules_XFF": {
-              "class": "iRule",
-              "iRule": "when HTTP_REQUEST {\n  HTTP::header insert X-Forwarded-For [IP::remote_addr] \n }"
-            }
-          },
-           "f5_test002_2": {
-            "class": "Application",
-            "template": "generic",
-            "app_2_svc_vs": {
-              "class": "Service_HTTP",
-               "iRules": ["IRules_XFF1"],
-              "persistenceMethods": [ "cookie" ],
-              "virtualAddresses": [
-                "192.168.2.216"
-              ],
-              "snat": "auto",
-              "virtualPort": 80,
-              "pool": "app_2_svc_pool"
-            },
-            "app_2_svc_pool": {
-              "class": "Pool",
-              "monitors": [
-                "http"
-              ],
-              "loadBalancingMode": "least-connections-member",
-              "members": [
-              {
-                "servicePort": 80,
-                "serverAddresses": []
-              }
-              ]
-            },
-             "IRules_XFF1": {
-              "class": "iRule",
-              "iRule": "when HTTP_REQUEST {\n  HTTP::header insert X-Forwarded-For [IP::remote_addr] \n }"
-            }
-          }
-        }
-      }
-    }
-```
+可参考example
